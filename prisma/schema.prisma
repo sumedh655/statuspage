@@ -1,0 +1,38 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String  @id @default(uuid())
+  email     String  @unique
+  name      String?
+  password  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id        String     @id @default(uuid())
+  name      String
+  status    String     // Operational, Degraded Performance, etc.
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  incidents Incident[] // Add this line to reference back to Incident model
+}
+
+model Incident {
+  id          String   @id @default(uuid())
+  description String
+  status      String   // Active, Resolved, etc.
+  serviceId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  service     Service  @relation(fields: [serviceId], references: [id])
+}
+
